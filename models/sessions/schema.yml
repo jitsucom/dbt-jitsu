@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: jitsu_events
+    description: "{{doc('jitsu_events')}}"
+    columns:
+      - name: user_anonymous_id
+        tests:
+          - not_null
+      - name: eventn_ctx_event_id
+        tests:
+          - unique
+          - not_null
+
+  - name: jitsu_events_plus_session_id
+    description: "{{doc('jitsu_events_plus_session_id')}}"
+    columns:
+      - name: eventn_ctx_event_id
+        tests:
+          - unique
+          - not_null
+
+  - name: jitsu_sessions
+    description: "{{doc('jitsu_sessions')}}"
+    columns:
+      - name: session_id
+        tests:
+          - unique
+          - not_null
