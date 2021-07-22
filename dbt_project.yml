@@ -1,0 +1,52 @@
+name: 'jitsu'
+version: '0.1.0'
+require-dbt-version: ">=0.20.0"
+config-version: 2
+
+# These configurations specify where dbt should look for different types of files.
+# The `source-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+source-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+data-paths: ["data"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+    - "target"
+    - "dbt_modules"
+
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+models:
+  materialized: "{{var('jitsu_model_materialized', 'incremental')}}"
+  pre-hook:
+    - "{{ onrunstart() }}"   # On clickhouse enables allow_experimental_window_functions flag
+
+
+dispatch:
+  - macro_namespace: dbt_utils
+    search_order: [ jitsu , dbt_utils ] # Implementation of some dbt_utils macros for Clickhouse
+
+vars:
+  # location of source data table
+  jitsu_events_table:
+
+  # length of trailing window in minutes for session attribution.
+  # We recommend enabling builtin Retrospective User Recognition feature for user stitching
+  # and setting this parameter on par with meta.storage ttl_minutes, e.g.:
+  # jitsu_sessionization_trailing_window should not be less than meta.storage ttl_minutes
+  jitsu_sessionization_trailing_window: 7 * 24 * 60
+
+  # session inactivity cutoff: if the gap between two pageview events
+  # exceeds this number of seconds, 2nd pageview starts a new session
+  jitsu_session_inactivity_cutoff: 30 * 60
+
+  # If there are extra columns you wish to pass through this package,
+  # define them here. Columns will be included in the `jitsu_sessions`
+  # model as `first_<column>` and `last_<column>`.
+  jitsu_pass_through_columns: []
+
