@@ -1,7 +1,7 @@
 # dbt-jitsu
 This [dbt package](https://docs.getdbt.com/docs/package-management):
 * Transforms pageviews into sessions
-* For User stitching please enable builtin Jitsu feature [Retrospective User Recognition](https://jitsu.com/docs/other-features/retrospective-user-recognition)
+* For User stitching please enable builtin Jitsu feature [Retroactive User Recognition](https://jitsu.com/docs/other-features/retroactive-user-recognition)
 
 
 ## Installation instructions
