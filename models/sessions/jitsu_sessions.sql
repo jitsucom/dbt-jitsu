@@ -58,7 +58,7 @@ agg as (
 
         session_id,
         user_anonymous_id,
-        last_value(coalesce(user_anonymous_id, user_id, user_email)) over ({{window_clause}}) as blended_user_id,
+        last_value(coalesce(user_anonymous_id, user_internal_id, user_email)) over ({{window_clause}}) as blended_user_id,
         min(_timestamp) over ( {{partition_by}} ) as session_start_timestamp,
         max(_timestamp) over ( {{partition_by}} ) as session_end_timestamp,
         count(*) over ( {{partition_by}} ) as pageviews,
