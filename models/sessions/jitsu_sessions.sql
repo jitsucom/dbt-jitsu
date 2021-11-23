@@ -54,24 +54,26 @@ referrer_mapping as (
 
 agg as (
 
-    select distinct
+    select
 
         session_id,
-        user_anonymous_id,
-        last_value(coalesce(user_anonymous_id, user_internal_id, user_email)) over ({{window_clause}}) as blended_user_id,
-        min(_timestamp) over ( {{partition_by}} ) as session_start_timestamp,
-        max(_timestamp) over ( {{partition_by}} ) as session_end_timestamp,
-        count(*) over ( {{partition_by}} ) as pageviews,
+        coalesce(user_anonymous_id, user_id, user_email) as blended_user_id,
+        max(user_anonymous_id) as user_anonymous_id,
+        max(user_id) as user_id,
+        max(user_email) as user_email,
+        min(_timestamp) as session_start_timestamp,
+        max(_timestamp) session_end_timestamp,
+        count() as pageviews,
 
         {% for (key, value) in first_values.items() %}
-        first_value({{key}}) over ({{window_clause}}) as {{value}},
+        min({{key}}) as {{value}},
         {% endfor %}
 
         {% for (key, value) in last_values.items() %}
-        last_value({{key}}) over ({{window_clause}}) as {{value}}{% if not loop.last %},{% endif %}
+        max({{key}}) as {{value}}{% if not loop.last %},{% endif %}
         {% endfor %}
 
-    from pageviews_sessionized
+    from pageviews_sessionized GROUP BY session_id
 
 ),
 
@@ -104,7 +106,6 @@ tiers as (
     from diffs
 
 ),
-
 mapped as (
 
     select
@@ -119,3 +120,4 @@ mapped as (
 )
 
 select * from mapped
+
