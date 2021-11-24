@@ -1,10 +1,3 @@
-{{ config(
-    unique_key = 'eventn_ctx_event_id',
-    sort = '_timestamp',
-    dist = 'eventn_ctx_event_id',
-    )}}
-
-
 with pageviews as (
 
     select * from {{ref('jitsu_events')}}

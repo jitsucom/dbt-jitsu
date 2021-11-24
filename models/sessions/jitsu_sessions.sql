@@ -1,9 +1,3 @@
-{{ config(
-    unique_key = 'session_id',
-    sort = 'session_start_timestamp',
-    dist = 'session_id',
-    )}}
-
 {% set partition_by = "partition by session_id" %}
 
 {% set window_clause = "

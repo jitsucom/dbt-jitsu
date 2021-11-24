@@ -1,7 +1,3 @@
-{{ config(
-    materialized = 'view'
-    )}}
-
 select * ,
        row_number() over (
             partition by blended_user_id

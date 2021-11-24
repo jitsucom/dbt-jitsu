@@ -26,7 +26,25 @@ models:
   materialized: "{{var('jitsu_model_materialized', 'table')}}"
   pre-hook:
     - "{{ onrunstart() }}"   # On clickhouse enables allow_experimental_window_functions flag
-
+  jitsu:
+    sessions:
+      jitsu_events:
+        materialized: view
+        alias: "dbt_events_{{var('project_id')}}"
+      jitsu_events_plus_session_id:
+        alias: "dbt_events_plus_session_id_{{var('project_id')}}"
+        unique_key: 'event_id'
+        sort: '_timestamp'
+        dist: 'event_id' 
+      jitsu_sessions:
+        alias: "dbt_sessions_{{var('project_id')}}"
+        unique_key: 'session_id'
+        sort: 'session_start_timestamp'
+        dist: 'session_id'
+      jitsu_sessions_with_count:
+        alias: "dbt_sessions_wth_count_{{var('project_id')}}"
+        materialized: view
+      
 
 dispatch:
   - macro_namespace: dbt_utils
@@ -34,7 +52,9 @@ dispatch:
 
 vars:
   # location of source data table
-  jitsu_events_table: "{{ source('jitsu', 'pageviews') }}" 
+  jitsu_events_table_prefix: 'um_eventnative.events_'
+  project_id: umolo8eeaz
+  jitsu_events_table: "{{var('jitsu_events_table_prefix')}}{{var('project_id')}}"
 
   # length of trailing window in minutes for session attribution.
   # We recommend enabling builtin Retrospective User Recognition feature for user stitching

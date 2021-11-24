@@ -7,7 +7,7 @@ models:
       - name: user_anonymous_id
         tests:
           - not_null
-      - name: eventn_ctx_event_id
+      - name: event_id
         tests:
           - unique
           - not_null
@@ -15,7 +15,7 @@ models:
   - name: jitsu_events_plus_session_id
     description: "{{doc('jitsu_events_plus_session_id')}}"
     columns:
-      - name: eventn_ctx_event_id
+      - name: event_id
         tests:
           - unique
           - not_null
