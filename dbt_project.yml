@@ -1,5 +1,6 @@
+profile: dbt-clickhouse
 name: 'jitsu'
-version: '0.1.1'
+version: '0.1.2'
 require-dbt-version: ">=0.20.0"
 config-version: 2
 
@@ -22,7 +23,7 @@ clean-targets:         # directories to be removed by `dbt clean`
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 models:
-  materialized: "{{var('jitsu_model_materialized', 'incremental')}}"
+  materialized: "{{var('jitsu_model_materialized', 'table')}}"
   pre-hook:
     - "{{ onrunstart() }}"   # On clickhouse enables allow_experimental_window_functions flag
 
@@ -33,7 +34,7 @@ dispatch:
 
 vars:
   # location of source data table
-  jitsu_events_table:
+  jitsu_events_table: "{{ source('jitsu', 'pageviews') }}" 
 
   # length of trailing window in minutes for session attribution.
   # We recommend enabling builtin Retrospective User Recognition feature for user stitching
@@ -49,4 +50,6 @@ vars:
   # define them here. Columns will be included in the `jitsu_sessions`
   # model as `first_<column>` and `last_<column>`.
   jitsu_pass_through_columns: []
-
+  
+  jitsu_events_table_filter: "event_type='pageview'"
+  jitsu_model_materialized: 'table'
