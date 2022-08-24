@@ -38,7 +38,7 @@
 
 with pageviews_sessionized as (
 
-    select events.* from {{ref('jitsu_events_plus_session_id')}} events
+    select events.*, cast(email as string) as user_email from {{ref('jitsu_events_plus_session_id')}} events
     {% if is_incremental() %}
     , (select max(session_start_timestamp) as ts from {{ this }}) maxts
     where {{ dbt_utils.datediff('events._timestamp', 'maxts.ts', 'minute') }} <= {{ var('jitsu_sessionization_trailing_window') }}
@@ -52,13 +52,14 @@ referrer_mapping as (
 
 ),
 
+
 agg as (
 
     select distinct
 
         session_id,
         user_anonymous_id,
-        last_value(coalesce(user_anonymous_id, user_internal_id, user_email)) over ({{window_clause}}) as blended_user_id,
+        last_value(coalesce(user_anonymous_id, cast(user_internal_id as string), user_email)) over ({{window_clause}}) as blended_user_id,
         min(_timestamp) over ( {{partition_by}} ) as session_start_timestamp,
         max(_timestamp) over ( {{partition_by}} ) as session_end_timestamp,
         count(*) over ( {{partition_by}} ) as pageviews,
