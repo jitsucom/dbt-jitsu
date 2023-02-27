@@ -13,7 +13,7 @@ with pageviews as (
     where user_anonymous_id in (
     select distinct events.user_anonymous_id
     from {{ref('jitsu_events')}} events, (select max(_timestamp) as ts from {{ this }}) maxts
-    where {{ dbt_utils.datediff('events._timestamp', 'maxts.ts', 'minute') }} <= {{ var('jitsu_sessionization_trailing_window') }}
+    where {{ dbt.datediff('events._timestamp', 'maxts.ts', 'minute') }} <= {{ var('jitsu_sessionization_trailing_window') }}
     )
     {% endif %}
 
