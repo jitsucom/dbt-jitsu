@@ -106,7 +106,7 @@ session_ids as (
 
     {{dbt_utils.star(ref('jitsu_events'))}},
     pageview_number,
-    {{dbt_utils.surrogate_key(['user_anonymous_id', 'session_number'])}} as session_id
+    {{dbt_utils.generate_surrogate_key(['user_anonymous_id', 'session_number'])}} as session_id
 
     from session_numbers
 
