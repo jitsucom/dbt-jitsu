@@ -82,7 +82,7 @@ diffs as (
 
         *,
 
-        {{ dbt_utils.datediff('session_start_timestamp', 'session_end_timestamp', 'second') }} as duration_in_s
+        {{ dbt.datediff('session_start_timestamp', 'session_end_timestamp', 'second') }} as duration_in_s
 
     from agg
 
